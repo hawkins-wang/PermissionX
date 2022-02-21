@@ -1,20 +1,22 @@
 package com.hawkins.privatewether.ui.weather
 
+import android.content.Context
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.hawkins.privatewether.R
 import com.hawkins.privatewether.logic.model.Weather
 import com.hawkins.privatewether.logic.model.getSky
-import com.hawkins.privatewether.ui.place.PlaceViewModel
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.forecast.*
 import kotlinx.android.synthetic.main.life_index.*
@@ -28,7 +30,8 @@ class WeatherActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val decorView = window.decorView
-        decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         window.statusBarColor = Color.TRANSPARENT
 
         setContentView(R.layout.activity_weather)
@@ -43,15 +46,50 @@ class WeatherActivity : AppCompatActivity() {
             weatherViewModel.placeName = intent.getStringExtra("place_name") ?: ""
         }
 
-        weatherViewModel.weatherLiveData.observe(this,{
+        weatherViewModel.weatherLiveData.observe(this, {
             val weather = it.getOrNull()
             if (weather != null) {
                 showWeatherInfo(weather)
             } else {
-                Toast.makeText(this,"无法成功获取天气信息",Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "无法成功获取天气信息", Toast.LENGTH_LONG).show()
                 it.exceptionOrNull()?.printStackTrace()
             }
+            swipeRefresh.isRefreshing = false
         })
+
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary)
+        refreshWeather()
+        swipeRefresh.setOnRefreshListener {
+            refreshWeather()
+        }
+        navBtn.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+        drawerLayout.addDrawerListener(object: DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(drawerView.windowToken,InputMethodManager.HIDE_NOT_ALWAYS)
+            }
+
+        })
+    }
+
+    fun refreshWeather() {
+        weatherViewModel.refreshWeather(weatherViewModel.locationLng,weatherViewModel.locationLat)
+        swipeRefresh.isRefreshing = true
     }
 
     private fun showWeatherInfo(weather: Weather) {
@@ -71,7 +109,8 @@ class WeatherActivity : AppCompatActivity() {
         for (i in 0 until days) {
             val skycon = daily.skycon[i]
             val temperature = daily.temperature[i]
-            val view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false)
+            val view =
+                LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false)
             val dateInfo = view.findViewById(R.id.dateInfo) as TextView
             val skyIcon = view.findViewById(R.id.skyIcon) as ImageView
             val skyInfo = view.findViewById(R.id.skyInfo) as TextView

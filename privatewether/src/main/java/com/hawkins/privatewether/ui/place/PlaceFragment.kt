@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hawkins.privatewether.MainActivity
 import com.hawkins.privatewether.R
 import com.hawkins.privatewether.ui.weather.WeatherActivity
 import kotlinx.android.synthetic.main.fragment_place.*
@@ -33,7 +34,7 @@ class PlaceFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (placeViewModel.isPlaceSaved()) {
+        if (activity is MainActivity && placeViewModel.isPlaceSaved()) {
             val place = placeViewModel.getSavedPlace()
             val intent = Intent(context,WeatherActivity::class.java).apply {
                 putExtra("location_lng", place.location.lng)
@@ -44,7 +45,6 @@ class PlaceFragment : Fragment() {
             activity?.finish()
             return
         }
-
         val layoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
         adapter = PlaceAdapter(this, placeViewModel.placeList)
@@ -72,5 +72,6 @@ class PlaceFragment : Fragment() {
                 result.exceptionOrNull()?.printStackTrace()
             }
         })
+
     }
 }

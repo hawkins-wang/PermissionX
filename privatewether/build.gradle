@@ -45,8 +45,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0-native-mt'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20-M1'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:+'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
