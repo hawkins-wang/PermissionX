@@ -8,5 +8,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Permission"
 include ':app'
-include ':library'
+include ':permission'
 include ':privatewether'
+include ':architecturecomponents'
